@@ -172,6 +172,22 @@ else
     echo "哪吒部分或所有变量未设置，跳过安装哪吒。"
 fi
 
+# 检查环境变量是否为空
+if [[ -n "$keepaliveDomain" ]]; then
+    # 检查任务是否已存在
+    if ! grep -q "$keepaliveDomain" /etc/crontab; then
+        # 如果不存在，则写入新的 cron 任务
+        echo "正在添加新的 cron 任务到 /etc/crontab..."
+        echo "* * * * * root /usr/bin/curl \"$keepaliveDomain\" >/dev/null 2>&1" >> /etc/crontab
+        echo "任务已添加。"
+    else
+        echo "cron 任务已存在于 /etc/crontab，无需重复添加。"
+    fi
+else
+    echo "keepaliveDomain 变量为空，未修改 /etc/crontab。"
+fi
+
+
 # 生成 supervisor 进程守护配置文件
   cat > /etc/supervisor/conf.d/damon.conf << EOF
 [supervisord]
@@ -202,17 +218,3 @@ chmod +x $WORK_DIR/caddy $WORK_DIR/webapp
 # 运行 supervisor 进程守护
 supervisord -c /etc/supervisor/supervisord.conf
 
-# 检查环境变量是否为空
-if [[ -n "$keepaliveDomain" ]]; then
-    # 检查任务是否已存在
-    if ! grep -q "$keepaliveDomain" /etc/crontab; then
-        # 如果不存在，则写入新的 cron 任务
-        echo "正在添加新的 cron 任务到 /etc/crontab..."
-        echo "* * * * * root /usr/bin/curl \"$keepaliveDomain\" >/dev/null 2>&1" >> /etc/crontab
-        echo "任务已添加。"
-    else
-        echo "cron 任务已存在于 /etc/crontab，无需重复添加。"
-    fi
-else
-    echo "keepaliveDomain 变量为空，未修改 /etc/crontab。"
-fi
