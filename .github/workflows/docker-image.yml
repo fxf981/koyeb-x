@@ -33,5 +33,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: yeyunet/kox:latest
+          tags: ${{ secrets.DOCKER_TAGS }}
           platforms: linux/amd64

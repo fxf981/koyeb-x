@@ -42,11 +42,11 @@ EOF
 # 4. 下载 geoip.dat, geosite.dat, webapp
 wget -c -O $WORK_DIR/geoip.dat ${GH_PROXY}https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
 wget -c -O $WORK_DIR/geosite.dat ${GH_PROXY}https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
-wget -c -O $WORK_DIR/webapp.zip ${GH_PROXY}https://github.com/fxf981/koyeb-xray/archive/refs/tags/1.0.zip
+wget -c -O $WORK_DIR/webapp.zip ${GH_PROXY}https://github.com/fxf981/koyeb-x/archive/refs/tags/1.0.zip
 
 unzip $WORK_DIR/webapp.zip
-mv $WORK_DIR/koyeb-xray-1.0/webapp $WORK_DIR/webapp
-rm -rf $WORK_DIR/koyeb-xray-1.0/
+mv $WORK_DIR/koyeb-x-1.0/webapp $WORK_DIR/webapp
+rm -rf $WORK_DIR/koyeb-x-1.0/
 
 # 函数：生成 UUID
 generate_uuid() {
