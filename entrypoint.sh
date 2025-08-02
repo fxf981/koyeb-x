@@ -128,7 +128,7 @@ generate_config() {
       "clients": [{"id": "$UUID"}],
       "decryption": "none"
     },
-    "streamSettings": {"network": "ws","wsSettings": {"path": "/vl"}}
+    "streamSettings": {"network": "ws","wsSettings": {"path": "/TG@bing990118"}}
   }],
   $outbounds,
   "routing": {
