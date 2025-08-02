@@ -47,6 +47,7 @@ wget -c -O $WORK_DIR/webapp.zip ${GH_PROXY}https://github.com/fxf981/koyeb-x/arc
 unzip $WORK_DIR/webapp.zip
 mv $WORK_DIR/koyeb-x-1.0/webapp $WORK_DIR/webapp
 rm -rf $WORK_DIR/koyeb-x-1.0/
+rm $WORK_DIR/webapp.zip
 
 # 函数：生成 UUID
 generate_uuid() {
