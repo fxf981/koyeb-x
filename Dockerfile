@@ -12,7 +12,7 @@ ENV UUID=
 
 # 安装依赖
 RUN apt-get update &&\
-    apt-get -y install wget unzip supervisor curl net-tools htop btop screen nano &&\
+    apt-get -y install wget unzip supervisor curl net-tools htop btop screen nano cron &&\
     apt-get clean &&\
     rm -rf /var/lib/apt/lists/*
 

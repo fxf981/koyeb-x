@@ -7,6 +7,11 @@ TEMP_DIR=/tmp # 临时目录，用于下载和解压，之后会清理
 
 echo "开始部署。。。"
 
+# 判断是否存在保活域名
+if [[ -n "$keepaliveDomain" ]]; then
+  echo "* * * * * root curl $keepaliveDomain" >> /etc/crontab
+fi
+
 # 1. 下载并解压 Caddy 到 WORK_DIR
 CADDY_LATEST=$(wget -qO- "${GH_PROXY}https://api.github.com/repos/caddyserver/caddy/releases/latest" | awk -F [v\"] '/"tag_name"/{print $5}' || echo '2.7.6')
 # 修复：将caddy解压到 $WORK_DIR
