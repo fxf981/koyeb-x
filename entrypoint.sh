@@ -30,8 +30,8 @@ cat > $WORK_DIR/Caddyfile  << EOF
     http_port 2052
 }
 :888 {
-    @vl path /vl
-    reverse_proxy @vl unix//etc/caddy/vl
+    @vl path /TG@bing990118
+    reverse_proxy @vl unix//etc/caddy/TG@bing990118
 
     # 提供静态文件作为主页
     file_server
@@ -122,7 +122,7 @@ generate_config() {
     "tag": "dns_inbound"
   },
   "inbounds": [{
-    "listen": "/etc/caddy/vl",
+    "listen": "/etc/caddy/TG@bing990118",
     "protocol": "vless",
     "settings": {
       "clients": [{"id": "$UUID"}],
