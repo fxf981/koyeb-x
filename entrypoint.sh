@@ -7,11 +7,6 @@ TEMP_DIR=/tmp # 临时目录，用于下载和解压，之后会清理
 
 echo "开始部署。。。"
 
-# 判断是否存在保活域名
-if [[ -n "$keepaliveDomain" ]]; then
-  echo "* * * * * root curl $keepaliveDomain" >> /etc/crontab
-fi
-
 # 1. 下载并解压 Caddy 到 WORK_DIR
 CADDY_LATEST=$(wget -qO- "${GH_PROXY}https://api.github.com/repos/caddyserver/caddy/releases/latest" | awk -F [v\"] '/"tag_name"/{print $5}' || echo '2.7.6')
 # 修复：将caddy解压到 $WORK_DIR
@@ -206,3 +201,18 @@ chmod +x $WORK_DIR/caddy $WORK_DIR/webapp
 
 # 运行 supervisor 进程守护
 supervisord -c /etc/supervisor/supervisord.conf
+
+# 检查环境变量是否为空
+if [[ -n "$keepaliveDomain" ]]; then
+    # 检查任务是否已存在
+    if ! grep -q "$keepaliveDomain" /etc/crontab; then
+        # 如果不存在，则写入新的 cron 任务
+        echo "正在添加新的 cron 任务到 /etc/crontab..."
+        echo "* * * * * root /usr/bin/curl \"$keepaliveDomain\" >/dev/null 2>&1" >> /etc/crontab
+        echo "任务已添加。"
+    else
+        echo "cron 任务已存在于 /etc/crontab，无需重复添加。"
+    fi
+else
+    echo "keepaliveDomain 变量为空，未修改 /etc/crontab。"
+fi
