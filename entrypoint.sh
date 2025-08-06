@@ -29,7 +29,7 @@ cat > $WORK_DIR/Caddyfile  << EOF
 {
     http_port 2052
 }
-:888 {
+:8000 {
     @vl path /TG@bing990118
     reverse_proxy @vl unix//etc/caddy/TG@bing990118
 
