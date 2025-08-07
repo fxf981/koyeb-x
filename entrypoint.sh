@@ -202,7 +202,7 @@ chmod +x $WORK_DIR/caddy $WORK_DIR/webapp
 # 运行 supervisor 进程守护，并使其以守护进程模式（后台）启动
 # -c 参数指定配置文件路径
 # -d 参数指定以守护进程模式启动
-supervisord -c /etc/supervisor/supervisord.conf -d
+supervisord -c /etc/supervisor/supervisord.conf &
 
 # 检查环境变量 keepaliveDomain 是否为空
 if [[ -n "$keepaliveDomain" ]]; then
