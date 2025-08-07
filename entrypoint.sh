@@ -172,17 +172,45 @@ else
     echo "哪吒部分或所有变量未设置，跳过安装哪吒。"
 fi
 
+
 # 检查环境变量是否为空
 if [[ -n "$keepaliveDomain" ]]; then
-    # 检查任务是否已存在
-    if ! grep -q "$keepaliveDomain" /etc/crontab; then
+
+    # 1. 定义脚本的完整路径
+    # 如果没有指定 WORK_DIR，则使用当前目录
+    WORK_DIR=${WORK_DIR:-$(pwd)}
+    scriptPath="$WORK_DIR/run_curl_11_times.sh"
+
+    # 2. 创建执行11次curl的脚本
+    cat > "$scriptPath" << 'EOF'
+#!/bin/bash
+
+# 定义要访问的域名
+keepaliveDomain="$keepaliveDomain"
+
+# 设置循环次数
+count=22
+
+# 执行循环
+for i in $(seq 1 $count)
+do
+    /usr/bin/curl "$keepaliveDomain" >/dev/null 2>&1
+done
+EOF
+
+    # 给新脚本添加可执行权限
+    chmod +x "$scriptPath"
+
+    # 3. 检查 crontab 中是否已经有这个脚本的定时任务
+    if ! sudo grep -q "$scriptPath" /etc/crontab; then
         # 如果不存在，则写入新的 cron 任务
         echo "正在添加新的 cron 任务到 /etc/crontab..."
-        echo "* * * * * root /usr/bin/curl \"$keepaliveDomain\" >/dev/null 2>&1" >> /etc/crontab
-        echo "任务已添加。"
+        sudo echo "* * * * * root $scriptPath" >> /etc/crontab
+        echo "任务已添加：每分钟运行一次 $scriptPath"
     else
         echo "cron 任务已存在于 /etc/crontab，无需重复添加。"
     fi
+
 else
     echo "keepaliveDomain 变量为空，未修改 /etc/crontab。"
 fi
