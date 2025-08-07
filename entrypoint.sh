@@ -199,20 +199,26 @@ EOF
 # 这些文件都是下载到 $WORK_DIR 的，所以在这里统一赋权
 chmod +x $WORK_DIR/caddy $WORK_DIR/webapp
 
-# 以守护进程模式（后台）启动 supervisord
+# 运行 supervisor 进程守护，并使其以守护进程模式（后台）启动
+# -c 参数指定配置文件路径
+# -d 参数指定以守护进程模式启动
 supervisord -c /etc/supervisor/supervisord.conf -d
 
+# 检查环境变量 keepaliveDomain 是否为空
 if [[ -n "$keepaliveDomain" ]]; then
+    
+    echo "脚本已启动，开始向 $keepaliveDomain 发送请求..."
+
     # 无限循环
     while true
     do
-        # 运行 curl 命令并将输出重定向到文件或丢弃
+        # 运行 curl 命令并将输出重定向到 /dev/null，然后放到后台执行
         /usr/bin/curl "$keepaliveDomain" >/dev/null 2>&1 &
         
-        # 打印信息，表示已执行 curl 命令
-        echo "正在向 $keepaliveDomain 发送请求..."
+        # 获取北京时间并打印日志
+        echo "$(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S") 正在向 $keepaliveDomain 发送请求..."
         
-        # 在每次请求之间添加一个延迟
-        sleep 5 
+        # 在每次请求之间添加一个延迟，避免过于频繁
+        sleep 11
     done
 fi
