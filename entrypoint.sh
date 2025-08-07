@@ -172,50 +172,6 @@ else
     echo "哪吒部分或所有变量未设置，跳过安装哪吒。"
 fi
 
-
-# 检查环境变量是否为空
-if [[ -n "$keepaliveDomain" ]]; then
-
-    # 1. 定义脚本的完整路径
-    # 如果没有指定 WORK_DIR，则使用当前目录
-    WORK_DIR=${WORK_DIR:-$(pwd)}
-    scriptPath="$WORK_DIR/run_curl_11_times.sh"
-
-    # 2. 创建执行11次curl的脚本
-    cat > "$scriptPath" << 'EOF'
-#!/bin/bash
-
-# 定义要访问的域名
-keepaliveDomain="$keepaliveDomain"
-
-# 设置循环次数
-count=22
-
-# 执行循环
-for i in $(seq 1 $count)
-do
-    /usr/bin/curl "$keepaliveDomain" >/dev/null 2>&1
-done
-EOF
-
-    # 给新脚本添加可执行权限
-    chmod +x "$scriptPath"
-
-    # 3. 检查 crontab 中是否已经有这个脚本的定时任务
-    if ! sudo grep -q "$scriptPath" /etc/crontab; then
-        # 如果不存在，则写入新的 cron 任务
-        echo "正在添加新的 cron 任务到 /etc/crontab..."
-        sudo echo "* * * * * root $scriptPath" >> /etc/crontab
-        echo "任务已添加：每分钟运行一次 $scriptPath"
-    else
-        echo "cron 任务已存在于 /etc/crontab，无需重复添加。"
-    fi
-
-else
-    echo "keepaliveDomain 变量为空，未修改 /etc/crontab。"
-fi
-
-
 # 生成 supervisor 进程守护配置文件
   cat > /etc/supervisor/conf.d/damon.conf << EOF
 [supervisord]
@@ -243,6 +199,20 @@ EOF
 # 这些文件都是下载到 $WORK_DIR 的，所以在这里统一赋权
 chmod +x $WORK_DIR/caddy $WORK_DIR/webapp
 
-# 运行 supervisor 进程守护
-supervisord -c /etc/supervisor/supervisord.conf
+# 以守护进程模式（后台）启动 supervisord
+supervisord -c /etc/supervisor/supervisord.conf -d
 
+if [[ -n "$keepaliveDomain" ]]; then
+    # 无限循环
+    while true
+    do
+        # 运行 curl 命令并将输出重定向到文件或丢弃
+        /usr/bin/curl "$keepaliveDomain" >/dev/null 2>&1 &
+        
+        # 打印信息，表示已执行 curl 命令
+        echo "正在向 $keepaliveDomain 发送请求..."
+        
+        # 在每次请求之间添加一个延迟
+        sleep 5 
+    done
+fi
