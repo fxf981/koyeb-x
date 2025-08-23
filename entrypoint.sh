@@ -213,12 +213,13 @@ if [[ -n "$keepaliveDomain" ]]; then
     while true
     do
         # 运行 curl 命令并将输出重定向到 /dev/null，然后放到后台执行
-        /usr/bin/curl "$keepaliveDomain" >/dev/null 2>&1 &
+        # /usr/bin/curl "$keepaliveDomain" >/dev/null 2>&1 &
+        /usr/bin/curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36" "$keepaliveDomain" >/dev/null 2>&1 &
         
         # 获取北京时间并打印日志
         echo "$(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S") 正在向 $keepaliveDomain 发送请求..."
         
         # 在每次请求之间添加一个延迟，避免过于频繁
-        sleep 11
+        sleep 5
     done
 fi
